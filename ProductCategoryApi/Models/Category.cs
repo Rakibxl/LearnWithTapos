@@ -6,7 +6,9 @@
 
         public string Name { get; set; }
 
-        public ICollection<ProductCategoryApi> ProductCategories { get; set; }
+        public bool IsDeleted { get; set; }
+
+        public ICollection<ProductCategory> ProductCategories { get; set; }
 
     }
 }
