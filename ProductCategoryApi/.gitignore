@@ -1,0 +1,55 @@
+# Build Folders
+bin/
+obj/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Auto-generated files
+Generated\
+
+# Logs
+*.log
+*.nlog
+*.log.xml
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Visual Studio folders
+.vscode/
+.vs/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Mac/Windows files
+*.DS_Store
+Thumbs.db
+
+# Rider project files
+.idea/
+
+# Database files
+*.mdf
+*.ldf
+*.ndf
+
+# Entity Framework Migrations
+Migrations/
+
+# Publish output
+publish/
+
+# Sensitive settings files
+appsettings*.json
+
+# NuGet Packages
+*.nupkg
