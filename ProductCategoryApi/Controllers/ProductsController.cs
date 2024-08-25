@@ -16,8 +16,6 @@ namespace ProductCategoryApi.Controllers
     {
         private readonly ProductCategoryContext _context;
 
-
-
         public ProductsController(ProductCategoryContext context)
         {
             _context = context;
@@ -35,9 +33,61 @@ namespace ProductCategoryApi.Controllers
 
         // GET: api/products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
+            [FromQuery] string name = null,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null,
+            [FromQuery] string sortBy = null,
+            [FromQuery] bool sortDesc = false,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            return await _context.Products.Where(p => !p.IsDeleted).ToListAsync();
+            var query = _context.Products.AsQueryable();
+
+            // Filtering
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(p => p.Name.Contains(name));
+            }
+
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            }
+
+            // Sorting
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                query = sortBy.ToLower() switch
+                {
+                    "name" => sortDesc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
+                    "price" => sortDesc ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
+                    _ => query.OrderBy(p => p.Id)
+                };
+            }
+            else
+            {
+                query = query.OrderBy(p => p.Id); 
+            }
+
+            // Pagination
+            var totalItems = await query.CountAsync();
+            var products = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            // Returning paginated result
+            return Ok(new
+            {
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                Items = products
+            });
         }
 
         // GET: api/products/{id}
@@ -110,5 +160,7 @@ namespace ProductCategoryApi.Controllers
 
             return NoContent();
         }
+
+
     }
 }
